@@ -1,29 +1,46 @@
 
 <div class="flex h-screen">
-  <div [ngClass]="open ? 'w-20': 'w-72'" class="bg-orange-950 h-screen p-5 pt-8">
+  <div [ngClass]="open ? 'w-20': 'w-72'" class="bg-theme h-screen p-5 pt-8">
     <fa-icon (click)="toggleMenu()" [icon]="faBars" class="text-white text-xl cursor-pointer"></fa-icon>
 
-    <h1 class="origin-left font-sans font-thin text-xl text-white mt-1">
+    <h1 class="origin-left font-sans font-thin text-xl text-white mt-1" [ngClass]="{'scale-0 duration-300': open == true}">
       {{ title }}
     </h1>
 
     <!-- Menu Items with Icon -->
     <div class="mt-12">
       <ul class="text-white font-sans">
-        <li class="flex gap-3 cursor-pointer p-2 hover:p-2 hover:bg-orange-900 rounded-md" (click)="linkAction()">
-          <span>
-            <fa-icon [icon]="faDashboard"></fa-icon>
-          </span>
-          <span>Dashboard</span>
-        </li>
+        @for(menu of menus; track $index) {
+          @if(!menu.submenu){
+          <li class="flex gap-3 cursor-pointer p-2 hover:p-2 hover:bg-hover rounded-md" (click)="linkAction(menu.title)">
+            <span>
+              <fa-icon [icon]="menu.icon"></fa-icon>
+            </span>
+            <span [ngClass]="{'scale-0 duration-300': open == true}">{{ menu.title }}</span>
+          </li>
+      }
+        @if(menu.submenu){
+          <li class="flex gap-3 cursor-pointer p-2 hover:p-2 hover:bg-hover rounded-md" (click)="toggleArrow()">
+            <span>
+              <fa-icon [icon]="menu.icon"></fa-icon>
+            </span>
+            <span [ngClass]="{'scale-0 duration-300': open == true}">{{ menu.title }}</span>
+            <span>
+              <fa-icon [icon]="arrow ? faAngleUp : faAngleDown" class="ml-10"></fa-icon>
+            </span>
+          </li>
 
-        <li class="flex gap-3 cursor-pointer p-2 hover:p-2 hover:bg-orange-900 rounded-md" (click)="linkAction()">
-          <span>
-            <fa-icon [icon]="faUserCog"></fa-icon>
-          </span>
-          <span>Manage Users</span>
-        </li>
+          <ng-container *ngFor="let sub of menu.submenuItems">
+            <ul class="text-white ml-10" [ngClass]="{'hidden':arrow == false}">
+              <li (click)="linkAction(sub.title)" class="p-2 hover:p-2 hover:bg-hover rounded-lg gap-3 flex">
+                <span><fa-icon [icon]="sub.icon"></fa-icon></span>
+                <span>{{ sub.title }}</span>
+              </li>
+            </ul>
+          </ng-container>
+        }
 
+      }
       </ul>
     </div>
   </div>
